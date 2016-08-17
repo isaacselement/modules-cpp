@@ -4,8 +4,29 @@
 #include <stdio.h>
 #include "sqlite3.h"
 
-class SQLite3Worker
-{
+#pragma mark - SQLite3Session
+
+class SQLite3Session {
+
+public:
+    
+    SQLite3Session(sqlite3_stmt *statement);    
+    int columnIndex(const char *columnName);
+    
+    int getInt(const char *columnName);
+    double getDouble(const char *columnName);
+    const char *getString(const char *columnName);
+    
+private:
+    
+    sqlite3_stmt *_statement;
+};
+
+
+#pragma mark - SQLite3Worker
+
+class SQLite3Worker {
+    
 public:
     
     static SQLite3Worker *getInstance();
@@ -15,7 +36,11 @@ public:
     
     bool openDB(const char *sqlite3FilePath);
     bool execute(const char *sql);
-    bool query(const char *sql, void(handler)(sqlite3_stmt *statement));
+    
+    bool isQueryEmpty(const char *sql);
+    void query(const char *sql, std::function<bool (sqlite3_stmt *statement)> handler);
+    void query(const char *sql, std::function<bool (SQLite3Session *session)> handler);
+    
     
 private:
     
