@@ -35,11 +35,14 @@ public:
     virtual ~SQLite3Worker();
     
     bool openDB(const char *sqlite3FilePath);
+    bool isOpened();
+    
     bool execute(const char *sql);
     
     bool isQueryEmpty(const char *sql);
     void query(const char *sql, std::function<bool (sqlite3_stmt *statement)> handler);
     void query(const char *sql, std::function<bool (SQLite3Session *session)> handler);
+    int queryScalar(const char *sql);
     
     
 private:

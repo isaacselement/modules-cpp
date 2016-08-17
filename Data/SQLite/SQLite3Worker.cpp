@@ -53,12 +53,18 @@ SQLite3Worker::~SQLite3Worker() {
 bool SQLite3Worker::openDB(const char *sqlite3FilePath) {
     if (sqlite3Instance) {
         sqlite3_close(sqlite3Instance);
+        sqlite3Instance = nullptr;
     }
     bool status = sqlite3_open(sqlite3FilePath, &sqlite3Instance) == SQLITE_OK ;
     if (!status) {
         sqlite3_close(sqlite3Instance);
+        sqlite3Instance = nullptr;
     }
     return status;
+}
+
+bool SQLite3Worker::isOpened() {
+    return sqlite3Instance != nullptr;
 }
 
 // for DML
@@ -100,4 +106,15 @@ void SQLite3Worker::query(const char *sql, std::function<bool (SQLite3Session *s
         delete session;
     }
     sqlite3_finalize(statement);
+}
+
+// select COUNT(column) / SUM(column) / AVG(column) ...
+int SQLite3Worker::queryScalar(const char *sql) {
+    int result = 0;
+    this->query(sql, [&](sqlite3_stmt *statement){
+        const char *text = (char *)sqlite3_column_text(statement, 0);
+        result = atoi(text);
+        return true;
+    });
+    return result;
 }
