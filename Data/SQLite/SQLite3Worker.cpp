@@ -51,6 +51,7 @@ SQLite3Worker::~SQLite3Worker() {
 }
 
 bool SQLite3Worker::openDB(const char *sqlite3FilePath) {
+    printf("\nSQLite3Worker: open %s\n", sqlite3FilePath);
     if (sqlite3Instance) {
         sqlite3_close(sqlite3Instance);
         sqlite3Instance = nullptr;
@@ -59,6 +60,7 @@ bool SQLite3Worker::openDB(const char *sqlite3FilePath) {
     if (!status) {
         sqlite3_close(sqlite3Instance);
         sqlite3Instance = nullptr;
+        printf("\nSQLite3Worker: open Database failed!\n");
     }
     return status;
 }
